@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MBTI 性格测试</title>
+<style>
+:root{--bg:#eef0f6;--card:#fff;--ink:#1e2340;--mute:#6a708f;--line:#d8dcea;--c0:#3d5afe;--c1:#12a37f;--c2:#d98a00;--c3:#d6457a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14172b;--card:#1d2140;--ink:#eceefb;--mute:#9aa0c4;--line:#323861;--c0:#7c93ff;--c1:#3fcfa6;--c2:#f2b43a;--c3:#f27aa6}}
+:root[data-theme="dark"]{--bg:#14172b;--card:#1d2140;--ink:#eceefb;--mute:#9aa0c4;--line:#323861;--c0:#7c93ff;--c1:#3fcfa6;--c2:#f2b43a;--c3:#f27aa6}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;line-height:1.6}
+main{max-width:560px;margin:0 auto;padding:24px 16px 48px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px 22px}
+h1{font-size:30px;line-height:1.25;margin:0 0 12px;letter-spacing:.02em}
+p{margin:0 0 14px}
+.mute{color:var(--mute);font-size:14px}
+.btn{font:inherit;font-weight:600;border:0;border-radius:12px;padding:13px 22px;background:var(--ink);color:var(--card);cursor:pointer}
+.btn.ghost{background:none;color:var(--mute);border:1px solid var(--line);font-weight:500}
+button:focus-visible{outline:3px solid var(--c0);outline-offset:3px}
+.dots{display:flex;gap:6px;margin:6px 0 26px}
+.dots i{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.dots i.on{background:var(--ink)}
+.q{font-size:21px;line-height:1.55;min-height:5.2em;margin:0 0 18px;font-weight:600}
+.scale{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:10px}
+.o{border-radius:50%;border:2.5px solid var(--mute);background:none;cursor:pointer;padding:0;transition:background .15s,transform .15s}
+.o:hover{background:var(--line)}
+.o.sel{background:var(--ink);border-color:var(--ink);transform:scale(1.08)}
+.s5{width:56px;height:56px}.s4{width:44px;height:44px}.s3{width:34px;height:34px}
+.ends{display:flex;justify-content:space-between;font-size:13px;color:var(--mute)}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:26px}
+.type{display:flex;gap:4px;font-size:68px;line-height:1;font-weight:800;margin:4px 0 6px;letter-spacing:.04em}
+.nick{font-size:22px;font-weight:700;margin:0 0 10px}
+.bar{margin:18px 0}
+.bar .l{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px}
+.bar .t{height:12px;border-radius:6px;background:var(--line);overflow:hidden;display:flex}
+.bar .t b{display:block;height:100%}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+</style>
+</head>
+<body>
+<main><div class="card" id="app"></div></main>
+<script>
+var D=[["E","I","外向","内向","--c0"],["S","N","实感","直觉","--c1"],["T","F","思考","情感","--c2"],["J","P","判断","知觉","--c3"]];
+var Q=[
+[["聚会结束后，我通常觉得精力充沛",1],["我更喜欢独处来恢复精力",-1],["我很容易和陌生人聊起来",1],["开口之前，我习惯先在脑中想清楚",-1],["朋友多、圈子广，对我很重要",1]],
+[["我更相信亲眼所见的具体事实",1],["我常常沉浸在天马行空的想法里",-1],["做事时，我喜欢用已被验证的方法",1],["我对事物背后的意义和可能性更感兴趣",-1],["我会留意身边的细微变化和细节",1]],
+[["做决定时，逻辑分析比个人感受更重要",1],["我很容易感受到他人的情绪",-1],["争论时，我宁可直接指出问题，也不愿迁就",1],["为了维护和谐，我常常愿意让步",-1],["我认为公平比体谅更重要",1]],
+[["我喜欢提前做计划，并照着执行",1],["我喜欢保持灵活，临时决定让我更自在",-1],["把待办事项逐条划掉，会让我很满足",1],["截止日期临近时，我的效率才最高",-1],["我的桌面和房间通常整洁有序",1]]];
+var qs=[];for(var k=0;k<5;k++)for(var d=0;d<4;d++)qs.push({t:Q[d][k][0],d:d,s:Q[d][k][1]});
+var T={INTJ:["建筑师","独立、有远见，擅长把复杂的想法变成长期计划。"],INTP:["逻辑学家","爱钻研原理，对知识和理论有着无穷的好奇。"],ENTJ:["指挥官","果断、有魄力，天生善于带领团队达成目标。"],ENTP:["辩论家","机敏、爱挑战，喜欢在讨论中碰撞出新点子。"],INFJ:["提倡者","安静而有理想，默默关注他人的成长与意义。"],INFP:["调停者","内心丰富，忠于自己的价值观，富有同理心。"],ENFJ:["主人公","有感染力，乐于启发他人，把大家凝聚在一起。"],ENFP:["竞选者","热情、有创造力，总能在生活里发现新的可能。"],ISTJ:["物流师","踏实可靠，重视责任与秩序，说到做到。"],ISFJ:["守卫者","细心体贴，默默守护身边的人和重要的事。"],ESTJ:["总经理","务实高效，擅长组织资源，让事情井然有序。"],ESFJ:["执政官","热心友善，重视人际关系，乐于照顾大家。"],ISTP:["鉴赏家","冷静、动手能力强，喜欢拆解问题找到办法。"],ISFP:["探险家","温和随性，有独特的审美，活在当下。"],ESTP:["企业家","行动派，敢冒险，善于在现场抓住机会。"],ESFP:["表演者","活泼外向，爱热闹，把快乐带给周围的人。"]};
+var i=0,a=[],app=document.getElementById("app");
+function start(){i=0;a=[];app.innerHTML='<h1>MBTI 性格测试</h1><p>20 道题，约 3 分钟。没有对错，凭第一反应选择最接近你的程度。</p><p class="mute">这是一份简化的自我探索小测验，结果仅供娱乐和参考，不能替代专业评估。</p><div class="row"><button class="btn" id="go">开始测试</button></div>';document.getElementById("go").onclick=ask}
+function ask(){
+ var q=qs[i],h='<div class="dots" aria-hidden="true">';
+ for(var n=0;n<qs.length;n++)h+='<i class="'+(n<=i?'on':'')+'"></i>';
+ h+='</div><p class="mute">第 '+(i+1)+' / '+qs.length+' 题</p><p class="q">'+q.t+'</p><div class="scale" role="group" aria-label="同意程度">';
+ var sz=["s5","s4","s3","s4","s5"],lb=["非常不同意","不同意","一般","同意","非常同意"];
+ for(var v=1;v<=5;v++)h+='<button class="o '+sz[v-1]+(a[i]===v?' sel':'')+'" data-v="'+v+'" aria-label="'+lb[v-1]+'"></button>';
+ h+='</div><div class="ends"><span>不同意</span><span>同意</span></div><div class="nav"><button class="btn ghost" id="bk"'+(i?'':' disabled style="opacity:.4"')+'>上一题</button><span class="mute">选择后自动进入下一题</span></div>';
+ app.innerHTML=h;
+ var os=app.querySelectorAll(".o");
+ for(var j=0;j<os.length;j++)os[j].onclick=function(){a[i]=+this.getAttribute("data-v");this.classList.add("sel");setTimeout(function(){i++;i<qs.length?ask():result()},180)};
+ document.getElementById("bk").onclick=function(){if(i){i--;ask()}}
+}
+function result(){
+ var sc=[0,0,0,0],code="",h="";
+ for(var n=0;n<qs.length;n++)sc[qs[n].d]+=(a[n]-3)*qs[n].s;
+ for(var d=0;d<4;d++)code+=sc[d]>0?D[d][0]:D[d][1];
+ h+='<p class="mute">你的类型是</p><div class="type">';
+ for(d=0;d<4;d++)h+='<span style="color:var('+D[d][4]+')">'+code[d]+'</span>';
+ h+='</div><p class="nick">'+T[code][0]+'</p><p>'+T[code][1]+'</p>';
+ for(d=0;d<4;d++){
+  var p=Math.round((sc[d]+10)/20*100),c='var('+D[d][4]+')',lead=p>=50;
+  h+='<div class="bar"><div class="l"><span style="font-weight:'+(lead?700:400)+'">'+D[d][2]+' '+D[d][0]+' '+p+'%</span><span style="font-weight:'+(lead?400:700)+'">'+(100-p)+'% '+D[d][1]+' '+D[d][3]+'</span></div><div class="t"><b style="width:'+p+'%;background:'+c+'"></b><b style="width:'+(100-p)+'%;background:'+c+';opacity:.35"></b></div></div>';
+ }
+ h+='<p class="mute">百分比表示你在每个维度上偏向哪一侧的程度。越接近 50%，说明你在这一维度上越均衡。</p><div class="row"><button class="btn" id="re">重新测试</button></div>';
+ app.innerHTML=h;document.getElementById("re").onclick=start;window.scrollTo(0,0)
+}
+start();
+</script>
+</body>
+</html>
